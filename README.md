@@ -1,194 +1,108 @@
-🚀 Bike Lakehouse 2026
-End-to-End Data Engineering Project on Databricks
-📌 Project Overview
+# 🚀 Bike Lakehouse 2026  
+## End-to-End Data Engineering Project on Databricks
 
-This project implements a complete Medallion Architecture (Bronze → Silver → Gold) using Databricks, PySpark, and Delta Lake.
+---
 
-The pipeline ingests raw CRM and ERP CSV data, transforms and standardizes it in the Silver layer, and builds business-ready dimension and fact tables in the Gold layer using a Star Schema design.
+## 📌 Overview
 
-The objective of this project was to practice real-world data engineering concepts including ingestion, cleaning, transformation, dimensional modeling, and orchestration.
+This project implements a Medallion Architecture (Bronze → Silver → Gold) using **Databricks, PySpark, and Delta Lake**.
 
-🏗 Architecture
+The pipeline ingests raw CRM and ERP CSV files, transforms and standardizes the data in the Silver layer, and builds analytics-ready dimension and fact tables in the Gold layer using Star Schema principles.
 
-The project follows the Medallion Architecture pattern:
+This project demonstrates practical data engineering concepts including ingestion, transformation, dimensional modeling, and orchestration.
 
-Raw CSV Files
-      ↓
-Bronze Layer (Raw Delta Tables)
-      ↓
-Silver Layer (Cleaned & Standardized Data)
-      ↓
-Gold Layer (Dimension & Fact Tables)
-🥉 Bronze Layer – Raw Data Ingestion
-What I Implemented:
+---
 
-Read CRM and ERP CSV files using PySpark
+## 🏗 Architecture
 
-Used schema inference
+Raw CSV Files  
+→ Bronze Layer (Raw Delta Tables)  
+→ Silver Layer (Cleaned & Standardized Tables)  
+→ Gold Layer (Dimension & Fact Tables)
 
-Loaded data into Delta tables
+---
 
-Used overwrite mode for idempotent ingestion
+## 🥉 Bronze Layer – Raw Ingestion
 
-Structured ingestion using configuration lists
+### What Was Implemented
 
-Bronze Tables Created:
+- Read CSV files using PySpark  
+- Used schema inference  
+- Loaded raw data into Delta tables  
+- Used overwrite mode for repeatable ingestion  
+- Structured ingestion using a configuration list  
 
-bronze.crm_cust_info
+### Bronze Tables
 
-bronze.crm_prd_info
+- `bronze.crm_cust_info`  
+- `bronze.crm_prd_info`  
+- `bronze.crm_sales_details`  
+- `bronze.erp_cust_az12`  
+- `bronze.erp_loc_a101`  
+- `bronze.erp_px_cat_g1v2`  
 
-bronze.crm_sales_details
+This layer preserves raw source data with minimal transformation.
 
-bronze.erp_cust_az12
+---
 
-bronze.erp_loc_a101
+## 🥈 Silver Layer – Data Cleaning & Standardization
 
-bronze.erp_px_cat_g1v2
+### Transformations Implemented
 
-This layer stores raw source data without heavy transformations.
+- Trimmed whitespace from string columns  
+- Standardized gender values (M/F → Male/Female)  
+- Normalized country codes (US/USA → United States)  
+- Removed prefixes from customer IDs  
+- Converted numeric date fields (YYYYMMDD) to DateType  
+- Handled null and invalid values  
+- Renamed technical columns to business-friendly names  
+- Standardized product categories and product lines  
 
-🥈 Silver Layer – Data Cleaning & Transformation
+Each Silver table was implemented in a dedicated notebook to maintain modular structure.
 
-In the Silver layer, I cleaned and standardized the data to make it analytics-ready.
+---
 
-Transformations Implemented:
+## 🥇 Gold Layer – Dimensional Modeling
 
-Trimmed whitespace from all string columns
+### 📦 Dimension Tables
 
-Standardized gender values (M/F → Male/Female)
+#### `dim_products`
 
-Normalized country codes (US/USA → United States)
+- Generated surrogate key using `ROW_NUMBER()`  
+- Joined CRM product data with ERP category data  
+- Selected business-ready attributes  
 
-Removed prefixes from customer IDs
+#### `dim_customers`
 
-Converted numeric date fields (YYYYMMDD) to proper DateType
+- Generated surrogate `customer_key`  
+- Standardized demographic attributes  
+- Cleaned country and gender values  
 
-Handled null values and invalid values
+---
 
-Renamed technical column names to business-friendly names
+### 📊 Fact Table
 
-Standardized product category and product line values
+#### `fact_sales`
 
-Each Silver table was implemented in a dedicated notebook to maintain modular design.
+- Built by joining Silver sales data with:
+  - `dim_products`
+  - `dim_customers`  
+- Replaced natural keys with surrogate keys  
+- Selected business metrics:
+  - `sales_amount`
+  - `quantity`
+  - `price`
+  - `order_date`
+  - `ship_date`
+  - `due_date`
 
-🥇 Gold Layer – Dimensional Modeling
+This structure enables dimensional analysis and reporting.
 
-In the Gold layer, I built analytics-ready tables using Star Schema principles.
+---
 
-📦 Dimension Tables
-dim_products
+## 🔄 Orchestration
 
-Generated surrogate key using ROW_NUMBER()
+Created a master notebook that executes Silver layer notebooks sequentially using:
 
-Joined CRM product data with ERP category data
-
-Selected business-friendly attributes
-
-Built as a Delta table
-
-dim_customers
-
-Generated surrogate customer key
-
-Standardized demographic attributes
-
-Cleaned country and gender fields
-
-📊 Fact Table
-fact_sales
-
-Built by joining Silver sales data with:
-
-dim_products
-
-dim_customers
-
-Replaced natural keys with surrogate keys
-
-Selected business metrics:
-
-sales_amount
-
-quantity
-
-price
-
-order_date
-
-ship_date
-
-due_date
-
-This enables dimensional analysis and structured reporting.
-
-🔄 Orchestration
-
-Created an orchestration notebook that executes Silver layer notebooks sequentially using:
-
+```python
 dbutils.notebook.run()
-
-This simulates a pipeline workflow execution model.
-
-⚙️ Technologies Used
-
-Databricks
-
-Apache Spark
-
-PySpark
-
-Spark SQL
-
-Delta Lake
-
-GitHub Integration
-
-Medallion Architecture
-
-Star Schema Modeling
-
-📂 Project Structure
-Bronze.ipynb
-silver_crm_cust_info.ipynb
-silver_crm_prd_info.ipynb
-silver_crm_sales_details.ipynb
-silver_erp_cust_az12.ipynb
-silver_erp_loc_a101.ipynb
-silver_erp_px_cat_g1v2.ipynb
-gold_dim_products.ipynb
-gold_dim_customers.ipynb
-gold_fact_sales.ipynb
-Orchestration_Silver_Notebooks.ipynb
-🎯 What This Project Demonstrates
-
-End-to-end ETL pipeline development
-
-Medallion architecture implementation
-
-Data cleansing and standardization
-
-Dimensional modeling
-
-Surrogate key generation
-
-Fact and dimension design
-
-Modular notebook architecture
-
-Git-based version control in Databricks
-
-👤 Author
-
-Pakshal Sheth
-Data Engineering Project – 2026
-
-If you want next, I can:
-
-Make this more resume-impact oriented
-
-Create a short 4-line summary for LinkedIn
-
-Or upgrade this README to look slightly more senior-level without exaggerating
-
-Tell me which direction you want.
