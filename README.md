@@ -1,97 +1,194 @@
-# Databricks Bootcamp 2026
+🚀 Bike Lakehouse 2026
+End-to-End Data Engineering Project on Databricks
+📌 Project Overview
 
-Welcome to the **Databricks Data Lakehouse Project** by **Data With Baraa**.
+This project implements a complete Medallion Architecture (Bronze → Silver → Gold) using Databricks, PySpark, and Delta Lake.
 
-This repository contains a complete, real-world **Data Lakehouse implementation** built on Databricks, including datasets, notebooks, SQL examples, and exercises. Everything here is designed to help you understand how modern data teams use Databricks in practice, from data ingestion and transformation to analytics-ready data products.
+The pipeline ingests raw CRM and ERP CSV data, transforms and standardizes it in the Silver layer, and builds business-ready dimension and fact tables in the Gold layer using a Star Schema design.
 
----
+The objective of this project was to practice real-world data engineering concepts including ingestion, cleaning, transformation, dimensional modeling, and orchestration.
 
-## ⚠️ Important Note
+🏗 Architecture
 
-Build this project **on your own first** using the **Notion roadmap**.  
-Use this repository **only as a reference** if you get stuck.
+The project follows the Medallion Architecture pattern:
 
-Before starting, **watch the Databricks Bootcamp**, where I explain the architecture and decisions behind this project.
+Raw CSV Files
+      ↓
+Bronze Layer (Raw Delta Tables)
+      ↓
+Silver Layer (Cleaned & Standardized Data)
+      ↓
+Gold Layer (Dimension & Fact Tables)
+🥉 Bronze Layer – Raw Data Ingestion
+What I Implemented:
 
-- 🧭 Notion Roadmap: [Open guide](https://candle-gosling-511.notion.site/Project-Building-the-Bike-Data-Lakehouse-2e734b251f1280ab8dadc269e033cc38?source=copy_link)
-- ▶️ Databricks Bootcamp: [Watch on YouTube](https://www.youtube.com/playlist?list=PLNcg_FV9n7qZoxVkw-KPhcmgLWjHWVUc9)
-- 🎉 Finished? Share it on [LinkedIn](https://www.linkedin.com/in/baraa-khatib-salkini/). Let’s celebrate
+Read CRM and ERP CSV files using PySpark
 
----
+Used schema inference
 
-## 🏗️ Architecture
+Loaded data into Delta tables
 
-This project follows the **Medallion Architecture**:
+Used overwrite mode for idempotent ingestion
 
-### 🥉 Bronze Layer
-- Raw data ingestion  
-- Schema inference and storage as Delta tables  
+Structured ingestion using configuration lists
 
-### 🥈 Silver Layer
-- Data cleaning and standardization  
-- Type casting and validation  
+Bronze Tables Created:
 
-### 🥇 Gold Layer
-- Dimensional Data Model (Business Transformation)
-- Ready for BI and analysis  
+bronze.crm_cust_info
 
----
+bronze.crm_prd_info
 
-## 🛠️ Technologies Used
+bronze.crm_sales_details
 
-- Databricks  
-- Apache Spark  
-- PySpark  
-- Spark SQL  
-- Delta Lake  
-- Unity Catalog  
+bronze.erp_cust_az12
 
+bronze.erp_loc_a101
 
----
+bronze.erp_px_cat_g1v2
 
-## Prerequisites
-- Basic SQL, Python and some Pyspark knowledge  
-- No prior Databricks experience required  
+This layer stores raw source data without heavy transformations.
 
----
+🥈 Silver Layer – Data Cleaning & Transformation
 
-## ☕ Stay Connected
+In the Silver layer, I cleaned and standardized the data to make it analytics-ready.
 
-## 🌍 Connect With Me
+Transformations Implemented:
 
-[![YouTube](https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@DataWithBaraa)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/baraa-khatib-salkini)
-[![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.datawithbaraa.com)
-[![Newsletter](https://img.shields.io/badge/Newsletter-FF5722?style=for-the-badge&logo=substack&logoColor=white)](https://www.blog.datawithbaraa.com/subscribe)
+Trimmed whitespace from all string columns
 
----
+Standardized gender values (M/F → Male/Female)
 
-## 🎓 Courses (Structured & Certified)
+Normalized country codes (US/USA → United States)
 
-- 🏅 **SQL Full Course** → [Start here](https://www.datawithbaraa.com/course/sql-full-course-for-beginners)
-- 🏅 **Tableau Full Course** → [Start here](https://www.datawithbaraa.com/course/tableau-ultimate-full-course-for-beginners)
+Removed prefixes from customer IDs
 
----
+Converted numeric date fields (YYYYMMDD) to proper DateType
 
-## ▶️ Free YouTube Courses
+Handled null values and invalid values
 
-- **SQL Full Course** → [Watch on YouTube](https://youtu.be/SSKVgrwhzus)
-- **Python Full Course** → [Watch on YouTube](https://www.youtube.com/playlist?list=PLNcg_FV9n7qZGfFl2ANI_zISzNp257Lwn)
-- **Tableau Full Course** → [Watch on YouTube](https://youtu.be/UcGF09Awm4Y)
-- **Real-World Data Projects** → [Watch on YouTube](https://www.youtube.com/playlist?list=PLNcg_FV9n7qZ4Ym8ZriYT6WF8TaC2e_R7)
-- **Data Career Roadmaps** → [Watch on YouTube](https://www.youtube.com/playlist?list=PLNcg_FV9n7qah95jp-aPtysu7kFCbg7hd)
+Renamed technical column names to business-friendly names
 
+Standardized product category and product line values
 
----
+Each Silver table was implemented in a dedicated notebook to maintain modular design.
 
-## 🛡️ License
+🥇 Gold Layer – Dimensional Modeling
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
+In the Gold layer, I built analytics-ready tables using Star Schema principles.
 
-## 🌟 About Me
+📦 Dimension Tables
+dim_products
 
-Hi, I’m **Baraa Khatib Salkini**, also known as **Data With Baraa**.
-I’m a senior data professional and educator with over 17 years of industry experience, working across data engineering, analytics, and modern data platforms. I’ve led large-scale data projects in real companies and now focus on teaching practical, real-world data skills through my courses, YouTube content, and bootcamps.
-My goal is simple: help you understand how data actually works in real systems, not just how to write code.
+Generated surrogate key using ROW_NUMBER()
 
+Joined CRM product data with ERP category data
 
+Selected business-friendly attributes
+
+Built as a Delta table
+
+dim_customers
+
+Generated surrogate customer key
+
+Standardized demographic attributes
+
+Cleaned country and gender fields
+
+📊 Fact Table
+fact_sales
+
+Built by joining Silver sales data with:
+
+dim_products
+
+dim_customers
+
+Replaced natural keys with surrogate keys
+
+Selected business metrics:
+
+sales_amount
+
+quantity
+
+price
+
+order_date
+
+ship_date
+
+due_date
+
+This enables dimensional analysis and structured reporting.
+
+🔄 Orchestration
+
+Created an orchestration notebook that executes Silver layer notebooks sequentially using:
+
+dbutils.notebook.run()
+
+This simulates a pipeline workflow execution model.
+
+⚙️ Technologies Used
+
+Databricks
+
+Apache Spark
+
+PySpark
+
+Spark SQL
+
+Delta Lake
+
+GitHub Integration
+
+Medallion Architecture
+
+Star Schema Modeling
+
+📂 Project Structure
+Bronze.ipynb
+silver_crm_cust_info.ipynb
+silver_crm_prd_info.ipynb
+silver_crm_sales_details.ipynb
+silver_erp_cust_az12.ipynb
+silver_erp_loc_a101.ipynb
+silver_erp_px_cat_g1v2.ipynb
+gold_dim_products.ipynb
+gold_dim_customers.ipynb
+gold_fact_sales.ipynb
+Orchestration_Silver_Notebooks.ipynb
+🎯 What This Project Demonstrates
+
+End-to-end ETL pipeline development
+
+Medallion architecture implementation
+
+Data cleansing and standardization
+
+Dimensional modeling
+
+Surrogate key generation
+
+Fact and dimension design
+
+Modular notebook architecture
+
+Git-based version control in Databricks
+
+👤 Author
+
+Pakshal Sheth
+Data Engineering Project – 2026
+
+If you want next, I can:
+
+Make this more resume-impact oriented
+
+Create a short 4-line summary for LinkedIn
+
+Or upgrade this README to look slightly more senior-level without exaggerating
+
+Tell me which direction you want.
